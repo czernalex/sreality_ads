@@ -34,11 +34,8 @@ class AdsDetailsSpider(scrapy.Spider):
                     "estate_id": ad.estate_id
                 }
             )
-            # break
 
     def parse(self, response):
-        # with open("./{}.txt".format(response.meta.get("estate_id")), 'w') as f:
-        #     f.write(response.text)
         ad_price_data = json.loads(response.text)
         item = AdsDetailsCrawlerItem()
         item["estate_id"] = response.meta.get("estate_id", "estate-id-placeholder")
