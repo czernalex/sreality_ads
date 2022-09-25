@@ -23,7 +23,7 @@ class AdsDetailsSpider(scrapy.Spider):
         session = self.Session()
         ads = session.query(Ad)
         session.close()
-        request_url = "https://sreality.cz/api/cs/v2/estates/{estate_id}"
+        request_url = "https://www.sreality.cz/api/cs/v2/estates/{estate_id}"
         for ad in ads:
             yield scrapy.Request(
                 url=request_url.format(
