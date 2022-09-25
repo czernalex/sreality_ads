@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  api:
+    build: ./services/api
+    command: python manage.py run -h 0.0.0.0
+    volumes:
+      - ./services/api/:/usr/src/app/
+    ports:
+      - 5050:5000
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - ads_crawler
+
+  ads_crawler:
+    build: ./services/ads_crawler
+    command: scrapy crawl ads
+    volumes:
+      - ./services/ads_crawler/:/usr/src/app/
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - db
+    
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=sreality_ads_db
+
+volumes:
+  postgres_data:
