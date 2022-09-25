@@ -7,11 +7,16 @@ from ads_crawler.items import AdsCrawlerItem
 
 class AdsSpider(scrapy.Spider):
     name = "ads"
+    custom_settings = {
+        "ITEM_PIPELINES": {
+            "ads_crawler.pipelines.AdsCrawlerPipeline": 300
+        }
+    }
 
     def start_requests(self):
         request_url = "https://www.sreality.cz/api/cs/v2/estates?category_main_cb=1&category_type_cb=1&page={page_id}&per_page=20&tms={timestamp}"
         timestamp = int(datetime.datetime.now().timestamp())
-        for page_id in range(1):
+        for page_id in range(25):
             yield scrapy.Request(
                 url=request_url.format(
                     page_id=page_id+1,
@@ -25,7 +30,7 @@ class AdsSpider(scrapy.Spider):
         item = AdsCrawlerItem()
         for ad in ads_data:
             item["name"] = ad.get("name", "ad-name-placeholder")
-            item["price"] = ad.get("price", 0)
+            item["estate_id"] = ad.get("_links", {}).get("self", {}).get("href", "ad-estate-id-placeholder").split("/")[-1]
             item["locality"] = ad.get("locality", "ad-locality-placeholder")
             for i in range(3):
                 try:

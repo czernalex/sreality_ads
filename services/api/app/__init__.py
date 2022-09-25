@@ -13,19 +13,35 @@ class Ad(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.Text())
-    price = db.Column(db.Integer)
+    estate_id = db.Column(db.Text())
     locality = db.Column(db.Text())
     img_url_1 = db.Column(db.Text())
     img_url_2 = db.Column(db.Text())
     img_url_3 = db.Column(db.Text())
 
-    def __init__(self, name, price, locality, img_url_1, img_url_2, img_url_3):
+    def __init__(self, name, estate_id, locality, img_url_1, img_url_2, img_url_3):
         self.name = name
-        self.price = price
+        self.estate_id = estate_id
         self.locality = locality
         self.img_url_1 = img_url_1
         self.img_url_2 = img_url_2
         self.img_url_3 = img_url_3
+
+
+class AdDetail(db.Model):
+    __tablename__ = "ads_details"
+
+    id = db.Column(db.Integer, primary_key=True)
+    estate_id = db.Column(db.Text())
+    price = db.Column(db.Integer)
+    price_str = db.Column(db.Text())
+    description = db.Column(db.Text())
+
+    def __init__(self, estate_id, price, price_str, description):
+        self.estate_id = estate_id
+        self.price = price
+        self.price_str = price_str
+        self.description = description
 
 
 @app.route("/api")
@@ -33,15 +49,21 @@ def get_ads():
     response = {"data": []}
     ads = db.session.query(Ad)
     for ad in ads:
+        ad_detail = db.session.query(AdDetail).filter_by(estate_id=ad.estate_id).first()
         response["data"].append(
             {
                 "id": ad.id,
                 "name": ad.name,
-                "price": ad.price,
+                "estate_id": ad.estate_id,
                 "locality": ad.locality,
                 "img_url_1": ad.img_url_1,
                 "img_url_2": ad.img_url_2,
-                "img_url_3": ad.img_url_3
+                "img_url_3": ad.img_url_3,
+                "ad_detail": {
+                    "price_raw": ad_detail.price,
+                    "price": ad_detail.price_str,
+                    "description": ad_detail.description
+                }
             }
         )
     return response
@@ -62,12 +84,14 @@ def get_rendered_ads():
     ads = db.session.query(Ad)
     ads_response = ""
     for ad in ads:
+        ad_detail = db.session.query(AdDetail).filter_by(estate_id=ad.estate_id).first()
         ads_response += """
             <li>
                 <ul>
                     <li>{name}</li>
                     <li>{locality}</li>
-                    <li>{price}</li>
+                    <li>{price_str} CZK</li>
+                    <li><p>{description}</p></li>
                 </ul>
                 <div style=display:flex;>
                     <div style=flex:33.33%;padding:5px;>
@@ -85,7 +109,8 @@ def get_rendered_ads():
         """.format(
             name=ad.name,
             locality=ad.locality,
-            price=str(ad.price) + " CZK" if ad.price > 0 else "Info o ceně u RK",
+            price_str=ad_detail.price_str,
+            description=ad_detail.description,
             img_url_1=ad.img_url_1,
             img_url_2=ad.img_url_2,
             img_url_3=ad.img_url_3

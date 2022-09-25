@@ -15,7 +15,6 @@ services:
 
   ads_crawler:
     build: ./services/ads_crawler
-    command: scrapy crawl ads
     volumes:
       - ./services/ads_crawler/:/usr/src/app/
     env_file:
