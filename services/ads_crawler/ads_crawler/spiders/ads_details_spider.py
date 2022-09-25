@@ -7,7 +7,7 @@ from ads_crawler.models import Ad, db_connect
 from ads_crawler.items import AdsDetailsCrawlerItem
 
 
-class AdsDetailSpider(scrapy.Spider):
+class AdsDetailsSpider(scrapy.Spider):
     name = "ads_details"
     custom_settings = {
         "ITEM_PIPELINES": {
