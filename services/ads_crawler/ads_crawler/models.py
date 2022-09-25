@@ -28,10 +28,14 @@ class Ad(Base):
     name = Column("name", Text())
     price = Column("price", Integer)
     locality = Column("locality", Text())
-    img_url = Column("img_url", Text())
+    img_url_1 = Column("img_url_1", Text())
+    img_url_2 = Column("img_url_2", Text())
+    img_url_3 = Column("img_url_3", Text())
 
-    def __init__(self, name, price, locality, img_url):
+    def __init__(self, name, price, locality, img_url_1, img_url_2, img_url_3):
         self.name = name
         self.price = price
         self.locality = locality
-        self.img_url = img_url
+        self.img_url_1 = img_url_1
+        self.img_url_2 = img_url_2
+        self.img_url_3 = img_url_3

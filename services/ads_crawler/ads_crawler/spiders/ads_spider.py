@@ -27,7 +27,9 @@ class AdsSpider(scrapy.Spider):
             item["name"] = ad.get("name", "ad-name-placeholder")
             item["price"] = ad.get("price", 0)
             item["locality"] = ad.get("locality", "ad-locality-placeholder")
-            item["img_url"] = "ad-img-url-placeholder"
-            if len(ad.get("_links", {}).get("images", [])):
-                item["img_url"] = ad.get("_links", {}).get("images", [])[0].get("href", "ad-img-url-placeholder")
+            for i in range(3):
+                try:
+                    item["img_url_{}".format(i+1)] = ad.get("_links", {}).get("images", [])[i].get("href", "ad-img-url-{}-placeholder".format(i+1))
+                except IndexError:
+                    item["img_url_{}".format(i+1)] = "ad-img-url-{}-placeholder".format(i+1)
             yield item

@@ -15,13 +15,17 @@ class Ad(db.Model):
     name = db.Column(db.Text())
     price = db.Column(db.Integer)
     locality = db.Column(db.Text())
-    img_url = db.Column(db.Text())
+    img_url_1 = db.Column(db.Text())
+    img_url_2 = db.Column(db.Text())
+    img_url_3 = db.Column(db.Text())
 
-    def __init__(self, name, price, locality, img_url):
+    def __init__(self, name, price, locality, img_url_1, img_url_2, img_url_3):
         self.name = name
         self.price = price
         self.locality = locality
-        self.img_url = img_url
+        self.img_url_1 = img_url_1
+        self.img_url_2 = img_url_2
+        self.img_url_3 = img_url_3
 
 
 @app.route("/api")
@@ -35,7 +39,9 @@ def get_ads():
                 "name": ad.name,
                 "price": ad.price,
                 "locality": ad.locality,
-                "img_url": ad.img_url
+                "img_url_1": ad.img_url_1,
+                "img_url_2": ad.img_url_2,
+                "img_url_3": ad.img_url_3
             }
         )
     return response
@@ -45,11 +51,13 @@ def get_ads():
 def get_rendered_ads():
     response = """
         <!doctype html>
-        <title>sreality ads</title>
+        <title>Sreality ads</title>
         <h1>Sreality ads - flats for sale</h1>
-        <ol>
-            {ads}
-        </ol>
+        <div style=width:800px;>
+            <ol>
+                {ads}
+            </ol>
+        </div>
     """
     ads = db.session.query(Ad)
     ads_response = ""
@@ -59,14 +67,27 @@ def get_rendered_ads():
                 <ul>
                     <li>{name}</li>
                     <li>{locality}</li>
-                    <li>{price} CZK</li>
-                    <li><img src={img_url} alt=sreality.cz style=width:100px;height:100px></li>
+                    <li>{price}</li>
                 </ul>
+                <div style=display:flex;>
+                    <div style=flex:33.33%;padding:5px;>
+                        <img src={img_url_1} alt=img1_sreality.cz style=width:200px;height:200px> 
+                    </div>
+                    <div style=flex:33.33%;padding:5px;>
+                        <img src={img_url_2} alt=img2_sreality.cz style=width:200px;height:200px> 
+                    </div>
+                    <div style=flex:33.33%;padding:5px;>
+                        <img src={img_url_3} alt=img3_sreality.cz style=width:200px;height:200px> 
+                    </div>
+                </div>
+                <hr>
             </li>
         """.format(
             name=ad.name,
             locality=ad.locality,
-            price=ad.price,
-            img_url=ad.img_url
+            price=str(ad.price) + " CZK" if ad.price > 0 else "Info o ceně u RK",
+            img_url_1=ad.img_url_1,
+            img_url_2=ad.img_url_2,
+            img_url_3=ad.img_url_3
         )
     return response.format(ads=ads_response)

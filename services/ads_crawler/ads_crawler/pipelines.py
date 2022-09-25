@@ -16,7 +16,9 @@ class AdsCrawlerPipeline:
             item["name"],
             item["price"],
             item["locality"],
-            item["img_url"]
+            item["img_url_1"],
+            item["img_url_2"],
+            item["img_url_3"]
         )
         session.add(ad)
         session.commit()
