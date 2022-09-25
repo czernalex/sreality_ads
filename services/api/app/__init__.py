@@ -50,6 +50,11 @@ def get_ads():
     ads = db.session.query(Ad)
     for ad in ads:
         ad_detail = db.session.query(AdDetail).filter_by(estate_id=ad.estate_id).first()
+        ad_detail_response = {}
+        if ad_detail is not None:
+            ad_detail_response["price_raw"] = ad_detail.price_str
+            ad_detail_response["price"] = ad_detail.price
+            ad_detail_response["description"] = ad_detail.description
         response["data"].append(
             {
                 "id": ad.id,
@@ -59,17 +64,13 @@ def get_ads():
                 "img_url_1": ad.img_url_1,
                 "img_url_2": ad.img_url_2,
                 "img_url_3": ad.img_url_3,
-                "ad_detail": {
-                    "price_raw": ad_detail.price,
-                    "price": ad_detail.price_str,
-                    "description": ad_detail.description
-                }
+                "ad_detail": ad_detail_response
             }
         )
     return response
 
 
-@app.route("/ads")
+@app.route("/")
 def get_rendered_ads():
     response = """
         <!doctype html>
@@ -109,8 +110,8 @@ def get_rendered_ads():
         """.format(
             name=ad.name,
             locality=ad.locality,
-            price_str=ad_detail.price_str,
-            description=ad_detail.description,
+            price_str=ad_detail.price_str if ad_detail is not None else "price-placeholder",
+            description=ad_detail.description if ad_detail is not None else "description-placeholder",
             img_url_1=ad.img_url_1,
             img_url_2=ad.img_url_2,
             img_url_3=ad.img_url_3
